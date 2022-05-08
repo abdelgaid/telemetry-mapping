@@ -121,14 +121,15 @@ The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI
 
 The idea here is to create a aws lambda function the listen to incoming messages (submissions queue), process and prepare the data for submission to kinesis events.
 
-receive_message()
-
-
-## Configure Role
-
-
-
 ## Deploy
+
+For this steps, we need to install `awslocal` tools:
+
+```console
+$ pip install awscli-local
+```
+
+**Note**: ensure that path `~/.local/bin` is added to `PATH` environment variable.
 
 ### Create a role from
 
