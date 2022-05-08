@@ -131,7 +131,7 @@ $ pip install awscli-local
 
 **Note**: ensure that path `~/.local/bin` is added to `PATH` environment variable.
 
-### Create a role from
+### Create access role
 
 ```console
 $ awslocal s3 mb s3://deploy-bucket
@@ -154,6 +154,7 @@ $ awslocal lambda create-function \
 		--runtime python3.8 \			
 		--role TelemetryAccessRole							
 ```
+### Invoke and Test
 Invoke the function to check it is running correctly.
 ```console
 $ awslocal lambda invoke --function-name TelemetryMapping --cli-binary-format raw-in-base64-out  --payload file://./events/event.json response.json
@@ -166,6 +167,8 @@ $ awslocal kinesis get-shard-iterator --shard-id shardId-000000000000 --shard-it
 $ aws kinesis get-records --shard-iterator XXXXXXX
 ```
 
+### Consuming Messages
+
 After all the previous commands are successful, we can now map the service to the input queue. Not that `--batch-size` parameter is used to configure
 the number of messages per request.
 
@@ -176,14 +179,6 @@ $ awslocal lambda create-event-source-mapping \
 	--batch-size 5
 
 ```
-
-***
-Extra
-
-* How does your application scale and guarantee near-realtime processing when the incoming traffic increases? Where are the possible bottlenecks and how to tackle those?
-* What kind of metrics you would collect from the application to get visibility to its througput, performance and health?
-* How would you deploy your application in a real world scenario? What kind of testing, deployment stages or quality gates you would build to ensure a safe production deployment?
-
 
 ## Design Consideration
 
