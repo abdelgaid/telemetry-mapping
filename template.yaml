@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  telemetry-mapping
+
+  Map sqs sensors telemetry to kinesis events
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    Tracing: Active
+
+Parameters:
+  SQSBatchSize:
+    Type: "Number"
+    Default: "10"
+    MaxValue: "10000"
+    Description: Maximum number of messages per request.
+
+Resources:
+  SubmissionToEventsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: arn:aws:sqs:us-west-1:000000000000:submissions
+            BatchSize: 10
+

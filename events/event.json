@@ -1,0 +1,10 @@
+{
+  "Messages": [
+      {
+          "MessageId": "38e43157-49ef-3a63-0b70-eefe14d2e7d6",
+          "ReceiptHandle": "kecjzgqqatyktdihjjidczfrrxojmkxanooyjhruzkdbjaarmkrfrzcbbqyaefjfwvhcrvvdhlizalmdtmnsvbucplhcybeuxxsuvqdqabakzpsypqnorrqxgnlookjzqaclxskgoaxxpqwlnorqxypkkzluxuvurwmfxnndhjnzlioomttfgquaf",
+          "MD5OfBody": "b02ed65e35c8eaefd28242cf78809181",
+          "Body": "{\"submission_id\": \"71acaecf-abb4-418b-9662-eff2af4ba35d\", \"device_id\": \"cdd0532d-8bb5-46e5-ad0d-009080a678d5\", \"time_created\": \"2022-05-08T10:29:27.566791\", \"events\": {\"new_process\": [{\"cmdl\": \"calculator.exe\", \"user\": \"admin\"}, {\"cmdl\": \"notepad.exe\", \"user\": \"john\"}, {\"cmdl\": \"calculator.exe\", \"user\": \"admin\"}, {\"cmdl\": \"whoami\", \"user\": \"john\"}, {\"cmdl\": \"notepad.exe\", \"user\": \"admin\"}], \"network_connection\": [{\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 20772}, {\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 4982}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 51959}, {\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 14347}, {\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 4777}]}}"
+      }
+  ]
+}

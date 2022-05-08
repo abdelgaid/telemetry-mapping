@@ -1,0 +1,38 @@
+{
+    "configurations": [
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "invokeTarget": {
+                "target": "code",
+                "lambdaHandler": "app.lambda_handler",
+                "projectRoot": "${workspaceFolder}/submissions_to_events"
+            },
+            "lambda": {
+                "runtime": "python3.8",
+                "environmentVariables": {
+                    "AWS_DEFAULT_REGION": "eu-west-1",
+                    "AWS_ACCESS_KEY_ID": "some_key_id",
+                    "AWS_SECRET_ACCESS_KEY": "some_secret"
+                },
+                "payload": {
+                    "json": {
+                        "Messages": [
+                            {
+                                "MessageId": "94c022a1-4628-dc6b-d1f1-15d2ca7aea20",
+                                "ReceiptHandle": "xrgytbvbgvqozffhsipjzxmzibsulzqqjvfddsmbddqxwkvzivtbuagjtfycictppobswbebensiiymkexifruwygsudufbuszukshxzcxgqvausaktthxyusmablnzmyyapmzdjntonceudokjjlrpvkbxlcdstgkamlehztjwwjmbwzysbrydut",
+                                "MD5OfBody": "aa335fa58e20016a313e5f0e8753f1e1",
+                                "Body": "{\"submission_id\": \"3cadaf0e-0795-46b5-96b4-5dc15ce83fd9\", \"device_id\": \"ffc1682c-78b4-4435-a6c0-9d2abfd30f4b\", \"time_created\": \"2022-05-07T17:31:05.705557\", \"events\": {\"new_process\": [{\"cmdl\": \"notepad.exe\", \"user\": \"admin\"}, {\"cmdl\": \"whoami\", \"user\": \"evil-guy\"}, {\"cmdl\": \"whoami\", \"user\": \"evil-guy\"}, {\"cmdl\": \"calculator.exe\", \"user\": \"evil-guy\"}], \"network_connection\": [{\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 43722}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 8794}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 5765}, {\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 13914}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 36042}]}}"
+                            }
+                        ]
+                    }
+                }
+            },
+            "sam": {
+                "containerBuild": false,
+                "skipNewImageCheck": false
+            },
+            "name": "submissions_to_events:app.lambda_handler (python3.9)"
+        }
+    ]
+}
