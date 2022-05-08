@@ -1,15 +1,24 @@
 import boto3
+from botocore.config import Config
 import traceback
 import json
 import os
 import uuid
 from datetime import datetime
 
-# import requests
-kinesis_client = boto3.client('kinesis')
+import logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# import requests	
+kinesis_client = boto3.client('kinesis', 
+	region_name=os.environ['AWS_DEFAULT_REGION'],
+	aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
+	aws_secret_access_key=os.environ['AWS_ACCESS_KEY_ID'],
+	# read from env
+	endpoint_url=f'http://localstack:4566')
 
 EVENT_STREAM_NAME = 'events'
-
 
 def extract_data(record):
 	'''
@@ -93,13 +102,14 @@ def add_message(record, kinesis_records_all):
 		record_dict['events'] = events_list
 		# submission is successfull add it to our list
 		kinesis_records_all['valid'].append(record_dict)
-		print(f"Successfully processed message_id : {record_dict['MessageId']}")
+		logger.info(f"Successfully processed message_id : {record_dict['MessageId']}")
 	except Exception as e:
 		# vaild messages will be removed automatically after visibility time
 
 		# log exceptions
+		logger.warn(f"Unsuccessfully parsing message_id : {record_dict['MessageId']}")
 		message = '\n'.join([str(e), str(traceback.print_exc())])
-		print(message)
+		logger.error(message)
 	finally:
 		return kinesis_records_all
 
@@ -120,10 +130,17 @@ def push_to_kinesis(kinesis_records_all):
 
 			if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
 				print(f"Successfully submitted message_id : {source['MessageId']}")
+			else:
+				logger.error(response["ResponseMetadata"])
+				raise TypeError("Unable to update kinesis")
 		except Exception as e:
 			# keep faild events submission only.
 			itemIdentifier = source['MessageId']
 			failed_list['batchItemFailures'].append({"itemIdentifier": itemIdentifier})
+
+			message = '\n'.join([str(e), str(traceback.print_exc())])
+			logger.error(message)
+
 	
 	return failed_list
 

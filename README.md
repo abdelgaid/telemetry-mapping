@@ -149,16 +149,17 @@ $ awslocal lambda create-function \
 	--runtime python3.8 \
 	--role TelemetryAccessRole
 
-test
+$ awslocal lambda invoke --function-name TelemetryMapping --cli-binary-format raw-in-base64-out  --payload file://./events/event.json response.json
 
- aws lambda invoke --function-name TelemetryMapping out --log-type Tail
+$ awslocal kinesis get-shard-iterator --shard-id shardId-000000000000 --shard-iterator-type TRIM_HORIZON --stream-name events
+
+$ aws kinesis get-records --shard-iterator XXXXXXX
 ```
-
 
 ```console
 $ awslocal lambda create-event-source-mapping \
 	--event-source-arn arn:aws:sqs:us-west-1:000000000000:submissions	\
-	--function-name TelemetryReformat \
+	--function-name TelemetryMapping \
 	--batch-size 5
 
 ```

@@ -1,0 +1,1 @@
+awslocal lambda invoke --function-name TelemetryMapping --cli-binary-format raw-in-base64-out  --payload file://./events/event.json response.json
