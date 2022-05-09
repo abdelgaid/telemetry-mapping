@@ -3,22 +3,6 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
-            "name": "Invoke Lambda",
-            "invokeTarget": {
-                "target": "code",
-                "lambdaHandler": "Function Handler",
-                "projectRoot": "${workspaceFolder}/submissions_to_events"
-            },
-            "lambda": {
-                "runtime": "Lambda Runtime",
-                "payload": {
-                    "json": {}
-                }
-            }
-        },
-        {
-            "type": "aws-sam",
-            "request": "direct-invoke",
             "invokeTarget": {
                 "target": "code",
                 "lambdaHandler": "app.lambda_handler",
@@ -48,6 +32,7 @@
                 "containerBuild": false,
                 "skipNewImageCheck": false
             },
+   
             "name": "submissions_to_events:app.lambda_handler (python3.8)"
         }
     ]
