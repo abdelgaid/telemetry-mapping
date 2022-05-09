@@ -1,5 +1,6 @@
 import boto3
 from botocore.config import Config
+import base64
 import traceback
 import json
 import os
@@ -11,12 +12,11 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # import requests	
-kinesis_client = boto3.client('kinesis', 
+kinesis_client = boto3.client('kinesis',
 	region_name=os.environ['AWS_DEFAULT_REGION'],
 	aws_access_key_id=os.environ['AWS_ACCESS_KEY_ID'],
-	aws_secret_access_key=os.environ['AWS_ACCESS_KEY_ID'],
-	# read from env
-	endpoint_url=f'http://localstack:4566')
+	aws_secret_access_key=os.environ['AWS_SECRET_ACCESS_KEY'],
+	endpoint_url=os.environ['ENDPOINT_URL'])
 
 EVENT_STREAM_NAME = 'events'
 
@@ -28,8 +28,11 @@ def extract_data(record):
 	:param record: [type: dict] corresponds to a message from a list of messages read by lambda
 
 	'''
-	body = json.loads(record['Body'])
-	return body
+
+	body = record['Body']
+	decoded_body = base64.b64decode(body)
+	json_message = json.loads(decoded_body)
+	return json_message
 
 def map_event(message, extra):
 	'''
@@ -62,7 +65,7 @@ def map_event(message, extra):
 		data['details']['destination_port'] = extra['destination_port']
 	else:
 		# unkown message type. drop it.
-		raise TypeError("Undified source event type")
+		raise TypeError("Undefined source event type")
 	
 	event = {'Data': {}, 'PartitionKey': event_id}
 	event['Data'] = json.dumps(data)

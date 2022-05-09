@@ -1,14 +1,15 @@
 # Telemetry mapping
 
-This project contains source code and supporting files for a telemetry mapping of SQS queue `sensor-fleet` to kinesis stream `events`. You can deploy with the SAM CLI. It includes the following files and folders.
+This project contains source code and supporting files for a telemetry mapping of SQS queue `sensor-fleet` to kinesis stream `events`. 
+You can deploy with the SAM CLI. The projects includes the following files and folders.
 
 - `submissions_to_events` - Code for the application's Lambda function.
-- `events` - Invocation events that you can use to invoke the function.
+- `events` - Invocation events that you can use as sample inpunt to invoke the function.
 - `template.yaml` - A template that defines the application's AWS resources.
 
 ## Development Overview
-We have used AWS serverless functions to make this mapping. The function can read continuously from SQS queue map this data to
-Kinesis event stream.
+We have used AWS lambda function to make this service. The function can read continuously from SQS queue map this data to
+Kinesis event stream. The following are snippts from the code `submissions_to_events/app.py`:
 
 ```python
 def lambda_handler(event, context):
@@ -29,8 +30,9 @@ def lambda_handler(event, context):
 
 	return batchItemFailures
 ```
-`lambda_handler` is the main function the receive the request. We record all successfully processed records to `valid` list. `failed` 
-list will contain events that failed to be submitted to Kinesis. At the end we return the list of valid but failed submission. This is indicate to Lambda hanler to keep those messages in the queue for further retry.
+`lambda_handler` is the main function that receive the request. We record all successfully processed records to `valid` list. `failed` 
+list will contain events that failed to be submitted to Kinesis. At the end we return the list of valid but failed submissions.
+This indicate to Lambda hanler to keep those messages in the queue for further retry.
 
 ```python
 
@@ -52,15 +54,17 @@ def map_event(message, extra):
 	if('cmdl' in extra.keys() and 
 		'user' in extra.keys()):
 		data['type'] = "new_process"
-		data['cmdl'] = extra['cmdl']
-		data['user'] = extra['user']
+		data['details'] = {}
+		data['details']['cmdl'] = extra['cmdl']
+		data['details']['user'] = extra['user']
 	elif ('source_ip' in extra.keys() and
 			'source_ip' in extra.keys() and 
 			'destination_port' in extra.keys()):
 		data['type'] = "network_connection"
-		data['source_ip'] = extra['source_ip']
-		data['destination_ip'] = extra['destination_ip']
-		data['destination_port'] = extra['destination_port']
+		data['details'] = {}
+		data['details']['source_ip'] = extra['source_ip']
+		data['details']['destination_ip'] = extra['destination_ip']
+		data['details']['destination_port'] = extra['destination_port']
 	else:
 		# unkown message type. drop it.
 		raise TypeError("Undified source event type")
@@ -69,7 +73,13 @@ def map_event(message, extra):
 	event['Data'] = json.dumps(data)
 	return event
 ```
-`map_event` function is responsible to map the incoming message to the below output format:
+
+`map_event` function is responsible to map the incoming message to the below output.
+
+**Note**: We need further enhancements for message validations of items like number, time and ip address formats.
+
+### Output JSON format
+The output is formated as json as following:
 
 ```json
 {
@@ -93,8 +103,8 @@ def map_event(message, extra):
             ...
 }
 ```
-
-Finally, you can use `template.yaml` file to configure your application deployment:
+### Debuging
+Finally, you can use `template.yaml` file to debug and test your application:
 
 ```yaml
 Resources:
@@ -114,20 +124,29 @@ Resources:
 * **BatchSize**: the queue batch size per request. Default is 10 and maximum is 1000.
 
 If you prefer to use an integrated development environment (IDE) to build and test your application, you can use the AWS Toolkit.
-The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
+The AWS Toolkit is an open source plug-in for popular IDEs that uses the SAM CLI to build and deploy serverless applications on AWS. 
+The AWS Toolkit also adds a simplified step-through debugging experience for Lambda function code. See the following links to get started.
 
 * [VS Code](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/welcome.html)
 
 
 The idea here is to create a aws lambda function the listen to incoming messages (submissions queue), process and prepare the data for submission to kinesis events.
 
-## Deploy
+**Note**: SAM for some reason doesn't work with `localstack`, which needs more investation. So for `localstack` deployments, we will use `aws` and `awslocal` commands.
 
-For this steps, we need to install `awslocal` tools:
+## Local Deployment
+
+For this steps, we need to install `awslocal` tool:
 
 ```console
 $ pip install awscli-local
 ```
+
+Now ensure that environment variables for the command line is defined:
+
+ - `AWS_DEFAULT_REGION`
+ - `AWS_ACCESS_KEY_ID`
+ - `AWS_SECRET_ACCESS_KEY`
 
 **Note**: ensure that path `~/.local/bin` is added to `PATH` environment variable.
 
@@ -142,29 +161,39 @@ $ awslocal iam create-role --role-name TelemetryAccessRole \
 ```
 ### Package and deploy		
 ```console
-$ zip -r telemetry-mapping.zip submissions_to_events/__init__.py submissions_to_events/app.py
+$ zip -r -j telemetry-mapping.zip submissions_to_events/__init__.py submissions_to_events/app.py
 ```
-Deploy the lambda function
+Deploy the lambda function `telemetry-mapping.zip` to `localstack`
 
 ```console
 $ awslocal lambda create-function \
 		--function-name TelemetryMapping \
 		--zip-file fileb://./telemetry-mapping.zip \
 		--handler app.lambda_handler \
-		--runtime python3.8 \			
-		--role TelemetryAccessRole							
+		--runtime python3.8 \
+		--environment "Variables={AWS_DEFAULT_REGION=eu-west-1,AWS_ACCESS_KEY_ID=some_key_id,AWS_SECRET_ACCESS_KEY=some_secret,ENDPOINT_URL=http://localstack:4566}" \
+		--role TelemetryAccessRole \
+
+
 ```
 ### Invoke and Test
 Invoke the function to check it is running correctly.
+
 ```console
-$ awslocal lambda invoke --function-name TelemetryMapping --cli-binary-format raw-in-base64-out  --payload file://./events/event.json response.json
+$ awslocal lambda invoke --function-name TelemetryMapping \
+			--cli-binary-format raw-in-base64-out \
+			--payload file://./events/event.json response.json
 ```
 
 Now you can check the kinesis `event` has been created.
+
 ```console
 $ awslocal kinesis get-shard-iterator --shard-id shardId-000000000000 --shard-iterator-type TRIM_HORIZON --stream-name events
+{
+    "ShardIterator": "XXXXXXX"
+}
 
-$ aws kinesis get-records --shard-iterator XXXXXXX
+$ awslocal kinesis get-records --shard-iterator XXXXXXX
 ```
 
 ### Consuming Messages
@@ -174,7 +203,7 @@ the number of messages per request.
 
 ```console
 $ awslocal lambda create-event-source-mapping \
-	--event-source-arn arn:aws:sqs:us-west-1:000000000000:submissions	\
+	--event-source-arn arn:aws:sqs:eu-west-1:000000000000:submissions \
 	--function-name TelemetryMapping \
 	--batch-size 5
 

@@ -3,6 +3,22 @@
         {
             "type": "aws-sam",
             "request": "direct-invoke",
+            "name": "Invoke Lambda",
+            "invokeTarget": {
+                "target": "code",
+                "lambdaHandler": "Function Handler",
+                "projectRoot": "${workspaceFolder}/submissions_to_events"
+            },
+            "lambda": {
+                "runtime": "Lambda Runtime",
+                "payload": {
+                    "json": {}
+                }
+            }
+        },
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
             "invokeTarget": {
                 "target": "code",
                 "lambdaHandler": "app.lambda_handler",
@@ -19,20 +35,20 @@
                     "json": {
                         "Messages": [
                             {
-                                "MessageId": "94c022a1-4628-dc6b-d1f1-15d2ca7aea20",
-                                "ReceiptHandle": "xrgytbvbgvqozffhsipjzxmzibsulzqqjvfddsmbddqxwkvzivtbuagjtfycictppobswbebensiiymkexifruwygsudufbuszukshxzcxgqvausaktthxyusmablnzmyyapmzdjntonceudokjjlrpvkbxlcdstgkamlehztjwwjmbwzysbrydut",
-                                "MD5OfBody": "aa335fa58e20016a313e5f0e8753f1e1",
-                                "Body": "{\"submission_id\": \"3cadaf0e-0795-46b5-96b4-5dc15ce83fd9\", \"device_id\": \"ffc1682c-78b4-4435-a6c0-9d2abfd30f4b\", \"time_created\": \"2022-05-07T17:31:05.705557\", \"events\": {\"new_process\": [{\"cmdl\": \"notepad.exe\", \"user\": \"admin\"}, {\"cmdl\": \"whoami\", \"user\": \"evil-guy\"}, {\"cmdl\": \"whoami\", \"user\": \"evil-guy\"}, {\"cmdl\": \"calculator.exe\", \"user\": \"evil-guy\"}], \"network_connection\": [{\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 43722}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 8794}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"23.13.252.39\", \"destination_port\": 5765}, {\"source_ip\": \"192.168.0.1\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 13914}, {\"source_ip\": \"192.168.0.2\", \"destination_ip\": \"142.250.74.110\", \"destination_port\": 36042}]}}"
+                                "MessageId": "08e68861-7e0b-c9fc-89b6-e1df63a186d6",
+                                "ReceiptHandle": "xxztcasnuroawmrhabjdxepunnganqveumrvdetklgpemsbpoxtqmhgxhkxnmwhmrggvkjqxcaafgnmrzjmqpromnedekcyaiyprmnujmujwpwplnibrqgarndxkvopvobmbyeopvnhbpelscvglzivjnkhcmenolpwwoqnaruwtuofvaurploxaj",
+                                "MD5OfBody": "8216466e5395ecf0a7e6f6baa2470164",
+                                "Body": "eyJzdWJtaXNzaW9uX2lkIjogIjgxMTQwYTQ0LWIwNmQtNDIxZC1iZDAwLWNiYzY1YWFiNjUwMyIsICJkZXZpY2VfaWQiOiAiYTY4MjllZTItODcxZi00ODVlLTkyNTMtZmJkMDJiYTA5MWNjIiwgInRpbWVfY3JlYXRlZCI6ICIyMDIyLTA1LTA5VDAzOjIzOjU4Ljk4Mjc5NiIsICJldmVudHMiOiB7Im5ld19wcm9jZXNzIjogW3siY21kbCI6ICJub3RlcGFkLmV4ZSIsICJ1c2VyIjogImFkbWluIn0sIHsiY21kbCI6ICJub3RlcGFkLmV4ZSIsICJ1c2VyIjogImpvaG4ifSwgeyJjbWRsIjogImNhbGN1bGF0b3IuZXhlIiwgInVzZXIiOiAiYWRtaW4ifSwgeyJjbWRsIjogIm5vdGVwYWQuZXhlIiwgInVzZXIiOiAiam9obiJ9XSwgIm5ldHdvcmtfY29ubmVjdGlvbiI6IFt7InNvdXJjZV9pcCI6ICIxOTIuMTY4LjAuMSIsICJkZXN0aW5hdGlvbl9pcCI6ICIxNDIuMjUwLjc0LjExMCIsICJkZXN0aW5hdGlvbl9wb3J0IjogMzM3NjB9LCB7InNvdXJjZV9pcCI6ICIxOTIuMTY4LjAuMiIsICJkZXN0aW5hdGlvbl9pcCI6ICIyMy4xMy4yNTIuMzkiLCAiZGVzdGluYXRpb25fcG9ydCI6IDQxNjQxfSwgeyJzb3VyY2VfaXAiOiAiMTkyLjE2OC4wLjEiLCAiZGVzdGluYXRpb25faXAiOiAiMjMuMTMuMjUyLjM5IiwgImRlc3RpbmF0aW9uX3BvcnQiOiAyMjkxNH1dfX0="
                             }
                         ]
-                    }
+                      }                      
                 }
             },
             "sam": {
                 "containerBuild": false,
                 "skipNewImageCheck": false
             },
-            "name": "submissions_to_events:app.lambda_handler (python3.9)"
+            "name": "submissions_to_events:app.lambda_handler (python3.8)"
         }
     ]
 }
